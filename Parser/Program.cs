@@ -6,7 +6,10 @@ namespace Parser
     {
         static void Main(string[] args)
         {
+            EmailScheduler.Start();
+
             Console.WriteLine("Hello World!");
+            Console.ReadKey();
         }
     }
 }
