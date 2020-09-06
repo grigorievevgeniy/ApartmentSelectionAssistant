@@ -20,15 +20,16 @@ namespace Parser.Models
         public string DistanceInfo { get; set; }
 
         public int FloorCount { get; set; }
-        public string YearBuilt { get; set; }
+        public int YearBuilt { get; set; }
         public string ConstructionSeries { get; set; }
         public string HouseType { get; set; }
         public string CeilingType { get; set; }
-        public string Entrances { get; set; }
+        public string Entrances { get; set; } //Подъезды
         public string Elevators { get; set; }
         public string Heating { get; set; }
         public string Emergency { get; set; }
         public string Parking { get; set; }
         public string GarbageChute { get; set; }
+        public string GasSupply { get; set; }
     }
 }

@@ -16,13 +16,26 @@ namespace Parser
             //{
             //    sw.WriteLine(html);
             //}
-            using (StreamReader sr = new StreamReader("Cian.txt"))
+            //using (StreamReader sr = new StreamReader("Cian.txt"))
+            //{
+            //    html = sr.ReadToEnd();
+            //}
+            //var x = parser.ParsingListAdvertisement(html);
+
+
+
+            //html = parser.DownloadHtml("https://kazan.cian.ru/sale/flat/222765618/");
+            //using (StreamWriter sw = new StreamWriter("Advertisement.txt", false, System.Text.Encoding.Default))
+            //{
+            //    sw.WriteLine(html);
+            //}
+            using (StreamReader sr = new StreamReader("Advertisement.txt"))
             {
                 html = sr.ReadToEnd();
             }
+            var t = parser.ParsingAdvertisement(html);
 
-            var x = parser.ParsingListAdvertisement(html);
-            
+
             //Console.WriteLine(s);
 
 
