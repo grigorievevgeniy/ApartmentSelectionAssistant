@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Parser.Cian
@@ -22,12 +23,12 @@ namespace Parser.Cian
             }
         }
 
-        public ICollection<Advertisement> ParsingListAdvertisement(string html)
+        public ListAdvertisements ParsingListAdvertisement(string html)
         {
             IHtmlDocument document = new HtmlParser().ParseDocument(html);
             var rows = document.QuerySelectorAll("div[data-name='OfferCard']").ToArray();
 
-            List<Advertisement> Advertisements = new List<Advertisement>();
+            ListAdvertisements Advertisements = new ListAdvertisements();
             foreach (var row in rows)
             {
                 Owner owner = new Owner();
@@ -98,8 +99,19 @@ namespace Parser.Cian
                 advertisement.House = house;
                 advertisement.Owner = owner;
 
-                Advertisements.Add(advertisement);
+                Advertisements.Advertisements.Add(advertisement);
             }
+
+            var pages = document.QuerySelectorAll("div[data-name='Pagination'] ._93444fe79c--list-item--2KxXr");
+            for (int i = 0; i < pages.Length - 1; i++)
+            {
+                if (!pages[i].OuterHtml.Contains("href"))
+                {
+                    Advertisements.ExistNextPage = true;
+                    Advertisements.UrlNextPage = pages[i + 1].QuerySelector("a").GetAttribute("href");
+                    break;
+                }
+            } 
 
             return Advertisements;
         }

@@ -8,7 +8,7 @@ namespace Parser.Interfaces
     public interface IParser
     {
         public string DownloadHtml(string url);
-        public ICollection<Advertisement> ParsingListAdvertisement(string html);
+        public ListAdvertisements ParsingListAdvertisement(string html);
         public Advertisement ParsingAdvertisement(string html);
     }
 }
