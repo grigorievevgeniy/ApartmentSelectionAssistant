@@ -13,6 +13,7 @@ namespace Parser.Models
         public DateTime DateUpdate { get; set; }
 
         public string Url { get; set; }
+        public string DatePublishString { get; set; }
         public DateTime DatePublish { get; set; }
         public double TotalArea { get; set; }
         public double LivingArea { get; set; }

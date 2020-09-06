@@ -7,6 +7,8 @@ namespace Parser.Models
         public Guid Id { get; set; }
         public string Url { get; set; }
 
+
+        public string FullAdress { get; set; }
         public string Region { get; set; }
         public string City { get; set; }
         public string District { get; set; }
@@ -14,6 +16,8 @@ namespace Parser.Models
         public string Street { get; set; }
 
         public string NumberHouse { get; set; }
+
+        public string DistanceInfo { get; set; }
 
         public int FloorCount { get; set; }
         public string YearBuilt { get; set; }
