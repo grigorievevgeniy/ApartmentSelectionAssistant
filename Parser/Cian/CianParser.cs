@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using Parser.DtoModels;
 using Parser.Helpers;
 using Parser.Interfaces;
 using Parser.Models;
@@ -9,8 +10,15 @@ using System.Net;
 
 namespace Parser.Cian
 {
-    class CianParser : IParser
+    public class CianParser : IParser
     {
+        AdvertisementRepository repository;
+
+        public CianParser()
+        {
+            repository = new AdvertisementRepository();
+        }
+
         public void Start(string url)
         {
             ListAdvertisements listAdvertisements = new ListAdvertisements();
@@ -22,8 +30,11 @@ namespace Parser.Cian
                 listAdvertisements = ParsingListAdvertisement(html);
 
                 //ToDo здесь загрузка в БД
+                repository.AddListAdvertisement(listAdvertisements);
 
             } while (listAdvertisements.ExistNextPage);
+
+
         }
 
         public string DownloadHtml(string url)
@@ -133,6 +144,10 @@ namespace Parser.Cian
                 {
                     Advertisements.ExistNextPage = true;
                     Advertisements.UrlNextPage = pages[i + 1].QuerySelector("a").GetAttribute("href");
+                    if (!Advertisements.UrlNextPage.StartsWith("https://kazan.cian.ru"))
+                    {
+                        Advertisements.UrlNextPage = "https://kazan.cian.ru" + Advertisements.UrlNextPage;
+                    }
                     break;
                 }
             } 
