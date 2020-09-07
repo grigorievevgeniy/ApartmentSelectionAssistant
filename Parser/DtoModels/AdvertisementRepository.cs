@@ -1,18 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Parser.Interfaces;
 using Parser.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Parser.DtoModels
 {
     public class AdvertisementRepository : IRepository
     {
         ParserContext parserContext;
-        Mapper mapper;
         public AdvertisementRepository()
         {
             parserContext = new ParserContext();
@@ -28,24 +27,52 @@ namespace Parser.DtoModels
 
         public void AddAdvertisement(Advertisement advertisement)
         {
-            var ownerId = AddOrFindOwner(advertisement.Owner);
-            var houseId = AddOrFindHouse(advertisement.House);
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<Advertisement, DtoAdvertisement>());
+            var mapper = new Mapper(config);
 
-            advertisement.Owner = null;
-            advertisement.House = null;
+            
 
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<Advertisement, DtoAdvertisement>()
-                //.ForMember(x => x.Owner, op => op.Ignore)
-                //.ForMember("HouseId", opt => opt.MapFrom(c => c.Id == h))
-                );
-            mapper = new Mapper(config);
-            DtoAdvertisement dtoAdvertisement = mapper.Map<DtoAdvertisement>(advertisement);
+            DtoAdvertisement dtoAdvertisement = parserContext.Advertisements.SingleOrDefault(x => x.Url == advertisement.Url);
 
-            dtoAdvertisement.OwnerId = ownerId;
-            dtoAdvertisement.HouseId = houseId;
+            if (dtoAdvertisement != default)
+            {
+                advertisement.Id = dtoAdvertisement.Id;
 
-            parserContext.Advertisements.Add(dtoAdvertisement);
+                var ownerId = AddOrFindOwner(advertisement.Owner);
+                var houseId = AddOrFindHouse(advertisement.House);
+
+                advertisement.Owner = null;
+                advertisement.House = null;
+
+                mapper.Map(advertisement, dtoAdvertisement);
+
+                dtoAdvertisement.OwnerId = ownerId;
+                dtoAdvertisement.HouseId = houseId;
+
+                parserContext.Advertisements.Update(dtoAdvertisement);
+            }
+            else
+            {
+                var ownerId = AddOrFindOwner(advertisement.Owner);
+                var houseId = AddOrFindHouse(advertisement.House);
+
+                advertisement.Owner = null;
+                advertisement.House = null;
+
+                dtoAdvertisement = mapper.Map<DtoAdvertisement>(advertisement);
+
+                dtoAdvertisement.OwnerId = ownerId;
+                dtoAdvertisement.HouseId = houseId;
+
+                parserContext.Advertisements.Add(dtoAdvertisement);
+            }
+
             parserContext.SaveChanges();
+        }
+
+        internal ICollection<string> GetUnfinishedAdvertisementUrls()
+        {
+            return parserContext.Advertisements.Where(x => !x.FullParse).Select(x => x.Url).ToArray();
         }
 
         public Guid AddOrFindHouse(House house)
@@ -55,7 +82,7 @@ namespace Parser.DtoModels
             if (dtoHouse == default)
             {
                 var config = new MapperConfiguration(cfg => cfg.CreateMap<House, DtoHouse>());
-                mapper = new Mapper(config);
+                var mapper = new Mapper(config);
                 dtoHouse = mapper.Map<DtoHouse>(house);
 
                 Guid id = parserContext.Houses.Add(dtoHouse).Entity.Id;
@@ -68,12 +95,12 @@ namespace Parser.DtoModels
 
         public Guid AddOrFindOwner(Owner owner)
         {
-            DtoOwner dtoOwner = parserContext.Owners.SingleOrDefault(x => x.Url == owner.Url);
+            DtoOwner dtoOwner = parserContext.Owners.SingleOrDefault(x => x.Url == owner.Url && x.Name == owner.Name);
 
             if (dtoOwner == default)
             {
                 var config = new MapperConfiguration(cfg => cfg.CreateMap<Owner, DtoOwner>());
-                mapper = new Mapper(config);
+                 var mapper = new Mapper(config);
                 dtoOwner = mapper.Map<DtoOwner>(owner);
 
                 Guid id = parserContext.Owners.Add(dtoOwner).Entity.Id;

@@ -34,6 +34,14 @@ namespace Parser.Cian
 
             } while (listAdvertisements.ExistNextPage);
 
+            var urls = repository.GetUnfinishedAdvertisementUrls();
+            foreach (var item in urls)
+            {
+                string html = DownloadHtml(item);
+                Advertisement advertisement = ParsingAdvertisement(html);
+                advertisement.Url = item;
+                repository.AddAdvertisement(advertisement);
+            }
 
         }
 
@@ -219,6 +227,8 @@ namespace Parser.Cian
                     case "Парковка": { house.Parking = item.Children[1].TextContent; } break;
                     case "Мусоропровод": { house.GarbageChute = item.Children[1].TextContent; } break;
                     case "Газоснабжение": { house.GasSupply = item.Children[1].TextContent; } break;
+                    case "Тип дома": { } break;
+                    case "Отопление": { } break;
 
                     default:
                         { throw new Exception(); }
@@ -226,11 +236,11 @@ namespace Parser.Cian
                 }
             }
 
-            advertisement.EstimatedPrice = decimal.Parse(string.Join("", document.QuerySelector("div[data-name='MarketPrice']").TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))));
+            //advertisement.EstimatedPrice = decimal.Parse(string.Join("", document.QuerySelector("div[data-name='MarketPrice']").TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))));
             advertisement.Price = decimal.Parse(string.Join("", document.QuerySelector("div[data-name='OfferTerms'] span[itemprop='price']").TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))));
 
-            owner.Url = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").GetAttribute("href");
-            owner.Name = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").TextContent;
+            //owner.Url = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").GetAttribute("href");
+            //owner.Name = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").TextContent;
 
             advertisement.DateUpdate = DateTime.Now;
             advertisement.FullParse = true;
