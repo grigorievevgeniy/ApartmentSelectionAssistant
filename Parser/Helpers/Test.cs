@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Parser
+namespace Parser.Helpers
 {
     public class Test : IJob
     {

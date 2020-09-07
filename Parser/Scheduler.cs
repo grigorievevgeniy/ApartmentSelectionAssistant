@@ -1,8 +1,7 @@
-﻿using Quartz;
+﻿using Parser.Helpers;
+using Quartz;
 using Quartz.Impl;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Parser
 {

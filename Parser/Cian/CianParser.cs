@@ -1,16 +1,11 @@
-﻿using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
+﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using Parser.DtoModels;
+using Parser.Helpers;
 using Parser.Interfaces;
 using Parser.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Parser.Cian
 {
@@ -18,37 +13,13 @@ namespace Parser.Cian
     {
         public void Start(string url)
         {
-            ListAdvertisements listAdvertisements;
+            ListAdvertisements listAdvertisements = new ListAdvertisements();
             do
             {
-                string html;
-                html = DownloadHtml(url);
+                if (listAdvertisements.UrlNextPage != default) url = listAdvertisements.UrlNextPage;
+
+                string html = DownloadHtml(url);
                 listAdvertisements = ParsingListAdvertisement(html);
-
-                //html = parser.DownloadHtml("https://kazan.cian.ru/kupit-3-komnatnuyu-kvartiru/");
-                //using (StreamWriter sw = new StreamWriter("Cian.txt", false, System.Text.Encoding.Default))
-                //{
-                //    sw.WriteLine(html);
-                //}
-                //using (StreamReader sr = new StreamReader("Cian.txt"))
-                //{
-                //    html = sr.ReadToEnd();
-                //}
-                //var x = ParsingListAdvertisement(html);
-
-
-
-                //html = parser.DownloadHtml("https://kazan.cian.ru/sale/flat/222765618/");
-                //using (StreamWriter sw = new StreamWriter("Advertisement.txt", false, System.Text.Encoding.Default))
-                //{
-                //    sw.WriteLine(html);
-                //}
-                using (StreamReader sr = new StreamReader("Advertisement.txt"))
-                {
-                    html = sr.ReadToEnd();
-                }
-                var t = ParsingAdvertisement(html);
-
 
                 //ToDo здесь загрузка в БД
 
@@ -57,11 +28,24 @@ namespace Parser.Cian
 
         public string DownloadHtml(string url)
         {
-            using (WebClient client = new WebClient())
+            if(FileInsteadWeb.CheckExistFile(url))
             {
-                //client.Proxy = new WebProxy("83.97.23.90", 18080);
-                return client.DownloadString(url);
+                return FileInsteadWeb.ReadFile(url);
             }
+            else
+            {
+                string html; 
+                using (WebClient client = new WebClient())
+                {
+                    //client.Proxy = new WebProxy("83.97.23.90", 18080);
+                    html = client.DownloadString(url);
+                }
+                FileInsteadWeb.SaveFile(url, html);
+
+                return html;
+            }
+
+
         }
         public ListAdvertisements ParsingListAdvertisement(string html)
         {
