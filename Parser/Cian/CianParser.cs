@@ -1,10 +1,12 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using Parser.DtoModels;
 using Parser.Interfaces;
 using Parser.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -14,6 +16,45 @@ namespace Parser.Cian
 {
     class CianParser : IParser
     {
+        public void Start(string url)
+        {
+            ListAdvertisements listAdvertisements;
+            do
+            {
+                string html;
+                html = DownloadHtml(url);
+                listAdvertisements = ParsingListAdvertisement(html);
+
+                //html = parser.DownloadHtml("https://kazan.cian.ru/kupit-3-komnatnuyu-kvartiru/");
+                //using (StreamWriter sw = new StreamWriter("Cian.txt", false, System.Text.Encoding.Default))
+                //{
+                //    sw.WriteLine(html);
+                //}
+                //using (StreamReader sr = new StreamReader("Cian.txt"))
+                //{
+                //    html = sr.ReadToEnd();
+                //}
+                //var x = ParsingListAdvertisement(html);
+
+
+
+                //html = parser.DownloadHtml("https://kazan.cian.ru/sale/flat/222765618/");
+                //using (StreamWriter sw = new StreamWriter("Advertisement.txt", false, System.Text.Encoding.Default))
+                //{
+                //    sw.WriteLine(html);
+                //}
+                using (StreamReader sr = new StreamReader("Advertisement.txt"))
+                {
+                    html = sr.ReadToEnd();
+                }
+                var t = ParsingAdvertisement(html);
+
+
+                //ToDo здесь загрузка в БД
+
+            } while (listAdvertisements.ExistNextPage);
+        }
+
         public string DownloadHtml(string url)
         {
             using (WebClient client = new WebClient())
@@ -22,7 +63,6 @@ namespace Parser.Cian
                 return client.DownloadString(url);
             }
         }
-
         public ListAdvertisements ParsingListAdvertisement(string html)
         {
             IHtmlDocument document = new HtmlParser().ParseDocument(html);
@@ -87,7 +127,7 @@ namespace Parser.Cian
                 advertisement.Description = row.QuerySelector("div[data-name='Description']")?.TextContent;
 
                 owner.Name = row.QuerySelector("div[data-name='AgentBrandMainInfoComponent']")?.TextContent;
-                owner.PhoneNumbers.Add(row.QuerySelector("div[data-name='PhoneButton']")?.TextContent);
+                owner.PhoneNumbers = row.QuerySelector("div[data-name='PhoneButton']")?.TextContent;
 
 
                 advertisement.DatePublishString = row.QuerySelector("div[data-name='TimeLabel'] .c6e8ba5398--absolute--9uFLj")?.TextContent;
@@ -115,7 +155,6 @@ namespace Parser.Cian
 
             return Advertisements;
         }
-
         public Advertisement ParsingAdvertisement(string html)
         {
             IHtmlDocument document = new HtmlParser().ParseDocument(html);
@@ -124,6 +163,7 @@ namespace Parser.Cian
             House house = new House();
             Advertisement advertisement = new Advertisement();
 
+            house.FullAdress = document.QuerySelector("div[data-name='Geo'] span[itemprop='name']").GetAttribute("content");
             house.DistanceInfo = document.QuerySelector(".a10a3f92e9--undergrounds--2pop3")?.TextContent;
             // data-name="renderUnderground"
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,13 +14,20 @@ namespace Parser.DtoModels
             //Database.EnsureCreated();
         }
 
-        DbSet<Advertisement> Advertisements { get; set; }
-        DbSet<House> Houses { get; set; }
-        DbSet<Owner> Owners { get; set; }
+        public DbSet<DtoAdvertisement> Advertisements { get; set; }
+        public DbSet<DtoHouse> Houses { get; set; }
+        public DbSet<DtoOwner> Owners { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=FlatParser;Trusted_Connection=True;");
+
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<DtoOwner, Owner>());
+            // Настройка AutoMapper
+            var mapper = new Mapper(config);
+
         }
+
+
     }
 }
