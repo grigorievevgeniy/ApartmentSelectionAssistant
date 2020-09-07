@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Parser.DtoModels
 {
-    public class Owner
+    public class DtoOwner
     {
         public Guid Id { get; set; }
         public string Url { get; set; }
@@ -14,6 +14,6 @@ namespace Parser.DtoModels
         public string Site { get; set; }
         public string OtherInfo { get; set; }
 
-        public virtual ICollection<Advertisement> Advertisements { get; set; }
+        public virtual ICollection<DtoAdvertisement> Advertisements { get; set; }
     }
 }

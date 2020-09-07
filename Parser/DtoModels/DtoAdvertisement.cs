@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Parser.DtoModels
 {
-    public class Advertisement
+    public class DtoAdvertisement
     {
-        //Todo Нужно ли здесь поле Id
         public Guid Id { get; set; }
 
         public bool FullParse { get; set; }
@@ -36,9 +35,9 @@ namespace Parser.DtoModels
         public decimal EstimatedPrice { get; set; }
 
         public Guid OwnerId { get; set; }
-        public virtual Owner Owner { get; set; }
+        public virtual DtoOwner Owner { get; set; } = null;
         public Guid HouseId { get; set; }
-        public virtual House House { get; set; }
+        public virtual DtoHouse House { get; set; } = null;
 
     }
 }
