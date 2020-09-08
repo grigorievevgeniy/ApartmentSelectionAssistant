@@ -29,11 +29,11 @@ namespace Parser.Cian
                 string html = DownloadHtml(url);
                 listAdvertisements = ParsingListAdvertisement(html);
 
-                //ToDo здесь загрузка в БД
                 repository.AddListAdvertisement(listAdvertisements);
 
             } while (listAdvertisements.ExistNextPage);
 
+            // Парсим отдельно каждое объявление
             var urls = repository.GetUnfinishedAdvertisementUrls();
             foreach (var item in urls)
             {
@@ -42,7 +42,6 @@ namespace Parser.Cian
                 advertisement.Url = item;
                 repository.AddAdvertisement(advertisement);
             }
-
         }
 
         public string DownloadHtml(string url)
@@ -63,9 +62,8 @@ namespace Parser.Cian
 
                 return html;
             }
-
-
         }
+
         public ListAdvertisements ParsingListAdvertisement(string html)
         {
             IHtmlDocument document = new HtmlParser().ParseDocument(html);
@@ -172,7 +170,6 @@ namespace Parser.Cian
 
             house.FullAdress = document.QuerySelector("div[data-name='Geo'] span[itemprop='name']").GetAttribute("content");
             house.DistanceInfo = document.QuerySelector(".a10a3f92e9--undergrounds--2pop3")?.TextContent;
-            // data-name="renderUnderground"
 
             var _aboutFlat = document.QuerySelectorAll("div[data-name='Description'] .a10a3f92e9--info--3XiXi");
             foreach (var item in _aboutFlat)
@@ -186,7 +183,9 @@ namespace Parser.Cian
                     case "Построен": { house.YearBuilt = int.Parse(string.Join("", item.Children[0].TextContent.Where(c => char.IsDigit(c)))); } break;
 
                     default:
-                        { throw new Exception(); }
+                        {
+                            //Здесь нужно отследить новые поля
+                        }
                         break;
                 }
             }
@@ -208,7 +207,9 @@ namespace Parser.Cian
                     case "Высота потолков": { advertisement.CeilingHeight = double.Parse(string.Join("", item.Children[1].TextContent.Where(c => char.IsDigit(c) || char.IsLetter(',')))); } break;
 
                     default:
-                        { throw new Exception(); }
+                        {
+                            //Здесь нужно отследить новые поля
+                        }
                         break;
                 }
             }
@@ -231,16 +232,30 @@ namespace Parser.Cian
                     case "Отопление": { } break;
 
                     default:
-                        { throw new Exception(); }
+                        {
+                            //Здесь нужно отследить новые поля
+                        }
                         break;
                 }
             }
 
-            //advertisement.EstimatedPrice = decimal.Parse(string.Join("", document.QuerySelector("div[data-name='MarketPrice']").TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))));
-            advertisement.Price = decimal.Parse(string.Join("", document.QuerySelector("div[data-name='OfferTerms'] span[itemprop='price']").TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))));
+            decimal result;
+            var elEPrice = document.QuerySelector("div[data-name='MarketPrice']");
+            if (elEPrice != default)
+            {
+                if (decimal.TryParse(string.Join(" ", elEPrice.TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))), out result))
+                    advertisement.EstimatedPrice = result;
+            }
 
-            //owner.Url = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").GetAttribute("href");
-            //owner.Name = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']").TextContent;
+            var elPrice = document.QuerySelector("div[data-name='OfferTerms'] span[itemprop='price']");
+            if (elPrice != default)
+            {
+                if (decimal.TryParse(string.Join(" ", elPrice.TextContent.Where(c => char.IsDigit(c) || char.IsLetter(','))), out result))
+                    advertisement.Price = result;
+            }
+
+            owner.Url = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']")?.GetAttribute("href");
+            owner.Name = document.QuerySelector("div[data-name='AuthorAsideBrand'] a[data-name='LinkWrapper']")?.TextContent;
 
             advertisement.DateUpdate = DateTime.Now;
             advertisement.FullParse = true;

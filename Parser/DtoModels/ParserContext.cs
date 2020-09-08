@@ -22,10 +22,8 @@ namespace Parser.DtoModels
         {
             optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=FlatParser;Trusted_Connection=True;");
 
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<DtoOwner, Owner>());
-            // Настройка AutoMapper
-            var mapper = new Mapper(config);
-
+            //var config = new MapperConfiguration(cfg => cfg.CreateMap<DtoOwner, Owner>());
+            //var mapper = new Mapper(config);
         }
 
 

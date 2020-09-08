@@ -30,13 +30,12 @@ namespace Parser.DtoModels
             var config = new MapperConfiguration(cfg => cfg.CreateMap<Advertisement, DtoAdvertisement>());
             var mapper = new Mapper(config);
 
-            
-
             DtoAdvertisement dtoAdvertisement = parserContext.Advertisements.SingleOrDefault(x => x.Url == advertisement.Url);
 
             if (dtoAdvertisement != default)
             {
                 advertisement.Id = dtoAdvertisement.Id;
+                advertisement.DatePublishString = dtoAdvertisement.DatePublishString;
 
                 var ownerId = AddOrFindOwner(advertisement.Owner);
                 var houseId = AddOrFindHouse(advertisement.House);
@@ -100,7 +99,7 @@ namespace Parser.DtoModels
             if (dtoOwner == default)
             {
                 var config = new MapperConfiguration(cfg => cfg.CreateMap<Owner, DtoOwner>());
-                 var mapper = new Mapper(config);
+                var mapper = new Mapper(config);
                 dtoOwner = mapper.Map<DtoOwner>(owner);
 
                 Guid id = parserContext.Owners.Add(dtoOwner).Entity.Id;
