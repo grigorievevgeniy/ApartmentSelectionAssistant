@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace Parser.Helpers
 {
@@ -22,21 +23,21 @@ namespace Parser.Helpers
             return false;
         }
 
-        public static string ReadFile(string url)
+        public static async Task<string> ReadFileAsync(string url)
         {
             string name = url.Replace(':', ' ').Replace('/', ' ').Replace('?', ' ') + ".html";
             using (StreamReader sr = new StreamReader(name))
             {
-                return sr.ReadToEnd();
+                return await sr.ReadToEndAsync();
             }
         }
 
-        public static void SaveFile(string url, string html)
+        public static async Task SaveFile(string url, string html)
         {
             string name = url.Replace(':', ' ').Replace('/', ' ').Replace('?', ' ') + ".html";
             using (StreamWriter sw = new StreamWriter(name, false, System.Text.Encoding.Default))
             {
-                sw.WriteLine(html);
+                await sw.WriteLineAsync(html);
             }
         }
     }

@@ -7,6 +7,7 @@ using Parser.Models;
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Parser.Cian
 {
@@ -19,14 +20,14 @@ namespace Parser.Cian
             repository = new AdvertisementRepository();
         }
 
-        public void Start(string url)
+        public async Task StartAsync(string url)
         {
             ListAdvertisements listAdvertisements = new ListAdvertisements();
             do
             {
                 if (listAdvertisements.UrlNextPage != default) url = listAdvertisements.UrlNextPage;
 
-                string html = DownloadHtml(url);
+                string html = await DownloadHtml(url);
                 listAdvertisements = ParsingListAdvertisement(html);
 
                 repository.AddListAdvertisement(listAdvertisements);
@@ -37,28 +38,28 @@ namespace Parser.Cian
             var urls = repository.GetUnfinishedAdvertisementUrls();
             foreach (var item in urls)
             {
-                string html = DownloadHtml(item);
-                Advertisement advertisement = ParsingAdvertisement(html);
+                string html = await DownloadHtml(item);
+                Advertisement advertisement = await ParsingAdvertisementAsync(html);
                 advertisement.Url = item;
                 repository.AddAdvertisement(advertisement);
             }
         }
 
-        public string DownloadHtml(string url)
+        public async Task<string> DownloadHtml(string url)
         {
             if(FileInsteadWeb.CheckExistFile(url))
             {
-                return FileInsteadWeb.ReadFile(url);
+                return await FileInsteadWeb.ReadFileAsync(url);
             }
             else
             {
-                string html; 
+                string html = default; 
                 using (WebClient client = new WebClient())
                 {
                     //client.Proxy = new WebProxy("83.97.23.90", 18080);
-                    html = client.DownloadString(url);
+                    //html = client.DownloadString(url);
                 }
-                FileInsteadWeb.SaveFile(url, html);
+                await FileInsteadWeb.SaveFile(url, html);
 
                 return html;
             }
@@ -160,7 +161,8 @@ namespace Parser.Cian
 
             return Advertisements;
         }
-        public Advertisement ParsingAdvertisement(string html)
+
+        public async Task<Advertisement> ParsingAdvertisementAsync(string html)
         {
             IHtmlDocument document = new HtmlParser().ParseDocument(html);
 
