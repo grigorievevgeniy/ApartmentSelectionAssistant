@@ -1,5 +1,7 @@
 ﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using NLog;
+using NLog.Fluent;
 using Parser.DtoModels;
 using Parser.Helpers;
 using Parser.Interfaces;
@@ -14,6 +16,8 @@ namespace Parser.Cian
     public class CianParser : IParser
     {
         AdvertisementRepository repository;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
 
         public CianParser()
         {
@@ -186,7 +190,9 @@ namespace Parser.Cian
 
                     default:
                         {
-                            //Здесь нужно отследить новые поля
+                            logger.Warn($"На сайте CIAN, в разделе 'Description' " +
+                                $"появилось новое поле '{item.Children[1].TextContent}'. " +
+                                $"Необходимо добавить его в модели и добавлять в БД");
                         }
                         break;
                 }
@@ -210,7 +216,9 @@ namespace Parser.Cian
 
                     default:
                         {
-                            //Здесь нужно отследить новые поля
+                            logger.Warn($"На сайте CIAN, в разделе 'GeneralInformation' (Общая информация) " +
+                                $"появилось новое поле '{item.Children[0].TextContent}'. " +
+                                $"Необходимо добавить его в модели и добавлять в БД");
                         }
                         break;
                 }
@@ -230,12 +238,18 @@ namespace Parser.Cian
                     case "Парковка": { house.Parking = item.Children[1].TextContent; } break;
                     case "Мусоропровод": { house.GarbageChute = item.Children[1].TextContent; } break;
                     case "Газоснабжение": { house.GasSupply = item.Children[1].TextContent; } break;
-                    case "Тип дома": { } break;
-                    case "Отопление": { } break;
+                    case "Тип дома": 
+                        { 
+                            //ToDo Добавить в БД
+                        } 
+                        break;
+                    //case "Отопление": { } break;
 
                     default:
                         {
-                            //Здесь нужно отследить новые поля
+                            logger.Warn($"На сайте CIAN, в разделе 'BtiHouseData' (О доме) " +
+                                $"появилось новое поле '{item.Children[0].TextContent}'. " +
+                                $"Необходимо добавить его в модели и добавлять в БД");
                         }
                         break;
                 }
