@@ -4,39 +4,39 @@ using System.Text;
 
 namespace Parser.DtoModels
 {
-    public class DtoAdvertisement
+    public class DtoAdvertisement : EntityBase
     {
-        public Guid Id { get; set; }
+        public virtual Guid Id { get; set; }
 
-        public bool FullParse { get; set; }
-        public DateTime DateUpdate { get; set; }
+        public virtual bool FullParse { get; set; }
+        public virtual DateTime DateUpdate { get; set; }
 
-        public string Url { get; set; }
-        public string DatePublishString { get; set; }
-        public DateTime DatePublish { get; set; }
-        public double TotalArea { get; set; }
-        public double LivingArea { get; set; }
-        public double KitchenArea { get; set; }
+        public virtual string Url { get; set; }
+        public virtual string DatePublishString { get; set; }
+        public virtual DateTime DatePublish { get; set; }
+        public virtual double TotalArea { get; set; }
+        public virtual double LivingArea { get; set; }
+        public virtual double KitchenArea { get; set; }
 
-        public int RoomCount { get; set; }
-        public int Floor { get; set; }
+        public virtual int RoomCount { get; set; }
+        public virtual int Floor { get; set; }
 
-        public string HousingType { get; set; }
-        public string RoomArea { get; set; }
-        public double CeilingHeight { get; set; }
-        public string Bathroom { get; set; }
-        public string BalconyLoggia { get; set; }
-        public string Repairs { get; set; }
-        public string ViewFromWindows { get; set; }
-        public string Description { get; set; }
-        public string Layout { get; set; } //Планировка
+        public virtual string HousingType { get; set; }
+        public virtual string RoomArea { get; set; }
+        public virtual double CeilingHeight { get; set; }
+        public virtual string Bathroom { get; set; }
+        public virtual string BalconyLoggia { get; set; }
+        public virtual string Repairs { get; set; }
+        public virtual string ViewFromWindows { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string Layout { get; set; } //Планировка
 
-        public decimal Price { get; set; }
-        public decimal EstimatedPrice { get; set; }
+        public virtual decimal Price { get; set; }
+        public virtual decimal EstimatedPrice { get; set; }
 
-        public Guid OwnerId { get; set; }
+        public virtual Guid OwnerId { get; set; }
         public virtual DtoOwner Owner { get; set; } = null;
-        public Guid HouseId { get; set; }
+        public virtual Guid HouseId { get; set; }
         public virtual DtoHouse House { get; set; } = null;
 
     }
