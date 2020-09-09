@@ -36,6 +36,7 @@ namespace Parser.DtoModels
             {
                 advertisement.Id = dtoAdvertisement.Id;
                 advertisement.DatePublishString = dtoAdvertisement.DatePublishString;
+                advertisement.DatePublish = dtoAdvertisement.DatePublish;
 
                 var ownerId = AddOrFindOwner(advertisement.Owner);
                 var houseId = AddOrFindHouse(advertisement.House);
@@ -86,6 +87,7 @@ namespace Parser.DtoModels
 
                 Guid id = parserContext.Houses.Add(dtoHouse).Entity.Id;
                 parserContext.SaveChanges();
+
                 return id;
             }
 

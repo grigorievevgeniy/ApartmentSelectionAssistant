@@ -137,8 +137,7 @@ namespace Parser.Cian
 
 
                 advertisement.DatePublishString = row.QuerySelector("div[data-name='TimeLabel'] .c6e8ba5398--absolute--9uFLj")?.TextContent;
-                //ToDo Распарсить время "7 апр, 11:15", "вчера, 12:06", "сегодня, 12:06"
-                //advertisement.DatePublish = ...
+                advertisement.DatePublish = ParsDateTime(advertisement.DatePublishString);
 
                 advertisement.DateUpdate = DateTime.Now;
                 advertisement.FullParse = false;
@@ -279,6 +278,25 @@ namespace Parser.Cian
             advertisement.Owner = owner;
 
             return advertisement;
+        }
+
+        private DateTime ParsDateTime(string text)
+        {
+            string[] parts = text.Split(new char[] { ',' });
+            DateTime date, time;
+            if (parts[0].StartsWith("сегодня") && DateTime.TryParse(parts[1], out date))
+            {
+                return date;
+            }
+            else if (parts[0].StartsWith("вчера") && DateTime.TryParse(parts[1], out date))
+            {
+                return date.AddDays(-1);
+            }
+            else if (DateTime.TryParse(parts[0], out date) && DateTime.TryParse(parts[1], out time))
+            {
+                return date.AddHours(time.Hour).AddMinutes(time.Minute);
+            }
+            else return default;
         }
     }
 }
